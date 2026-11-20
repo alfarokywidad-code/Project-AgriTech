@@ -1,4 +1,3 @@
-
 import { createContext, useEffect, useState } from "react";
 
 export const MyContext = createContext();
@@ -71,3 +70,48 @@ const initialProducts = [
     description: "Fresh green lettuce."
   }
 ];
+
+export function MyProvider({ children }) {
+
+  const [products, setProducts] = useState(() => {
+    return JSON.parse(localStorage.getItem("products")) || initialProducts;
+  });
+
+
+
+  // Save data automatically
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(products));
+  }, [products]);
+
+
+
+  // Add product
+  const addProduct = (product) => {
+    setProducts([...products, { ...product, id: Date.now() }]);
+  };
+
+  // Delete product
+  const deleteProduct = (id) => {
+    setProducts(products.filter((product) => product.id !== id));
+  };
+
+  // Edit product
+  const updateProduct = (id, updatedProduct) => {
+    setProducts(products.map((product) =>
+      product.id === id ? { ...product, ...updatedProduct } : product
+    ));
+  };
+
+
+  return (
+    <MyContext.Provider value={{
+      products,
+      addProduct,
+      deleteProduct,
+      updateProduct
+    }}>
+      {children}
+    </MyContext.Provider>
+  );
+}
