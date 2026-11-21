@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
-
+import { useContext } from "react";
+import { MyContext } from "../../../utils/MyContext";
 
 function ProductCard({ product }) {
 
+  const { addToCart, favorites, toggleFavorite } = useContext(MyContext);
+
+  const isFavorite = favorites.some(
+    (item) => item.id === product.id
+  );
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition duration-300 group">
@@ -17,13 +23,13 @@ function ProductCard({ product }) {
         />
 
         <button
-          
+          onClick={() => toggleFavorite(product)}
           className="absolute top-4 right-4 bg-white p-2.5 rounded-full shadow-md"
           aria-label="Toggle favorite"
         >
           <Heart
             size={19}
-            className="fill-red-500 text-red-500"  
+            className={isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"}
           />
         </button>
 
@@ -71,7 +77,7 @@ function ProductCard({ product }) {
           </Link>
 
           <button
-            
+            onClick={() => addToCart(product)}
             disabled={product.quantity === 0}
             className="flex justify-center items-center gap-2 bg-green-700 text-white py-2.5 rounded-xl hover:bg-green-800 transition text-sm disabled:opacity-50"
           >

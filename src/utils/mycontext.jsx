@@ -77,14 +77,26 @@ export function MyProvider({ children }) {
     return JSON.parse(localStorage.getItem("products")) || initialProducts;
   });
 
+  const [cart, setCart] = useState(() => {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  });
 
+  const [favorites, setFavorites] = useState(() => {
+    return JSON.parse(localStorage.getItem("favorites")) || [];
+  });
 
   // Save data automatically
   useEffect(() => {
     localStorage.setItem("products", JSON.stringify(products));
   }, [products]);
 
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   // Add product
   const addProduct = (product) => {
@@ -103,13 +115,83 @@ export function MyProvider({ children }) {
     ));
   };
 
+  // Add to cart
+  
+const addToCart = (product, amount = 1) => {
+
+  const existing = cart.find((item) => item.id === product.id);
+
+  const currentQuantity = existing ? existing.cartQuantity : 0;
+
+  if (currentQuantity + amount > product.quantity) {
+    alert("Not enough stock available.");
+    return;
+  }
+
+  if (existing) {
+    setCart(cart.map((item) =>
+      item.id === product.id
+        ? { ...item, cartQuantity: item.cartQuantity + amount }
+        : item
+    ));
+  } else {
+    setCart([
+      ...cart,
+      { ...product, cartQuantity: amount }
+    ]);
+  }
+};
+
+
+  // Remove from cart
+  const removeFromCart = (id) => {
+    setCart(cart.filter((item) => item.id !== id));
+  };
+
+  // Change cart quantity
+  const changeQuantity = (id, amount) => {
+    setCart(cart.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            cartQuantity: Math.max(
+              1,
+              Math.min(item.cartQuantity + amount, item.quantity)
+            )
+          }
+        : item
+    ));
+  };
+
+  // Favorites
+  const toggleFavorite = (product) => {
+    const exists = favorites.some((item) => item.id === product.id);
+
+    if (exists) {
+      setFavorites(favorites.filter((item) => item.id !== product.id));
+    } else {
+      setFavorites([...favorites, product]);
+    }
+  };
+
+  const cartTotal = cart.reduce(
+    (total, item) => total + item.price * item.cartQuantity,
+    0
+  );
 
   return (
     <MyContext.Provider value={{
       products,
+      cart,
+      favorites,
+      cartTotal,
       addProduct,
       deleteProduct,
-      updateProduct
+      updateProduct,
+      addToCart,
+      removeFromCart,
+      changeQuantity,
+      toggleFavorite
     }}>
       {children}
     </MyContext.Provider>
