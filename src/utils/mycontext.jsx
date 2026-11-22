@@ -1,8 +1,10 @@
 
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 
+// Create context
 export const MyContext = createContext();
 
+// Initial products
 const initialProducts = [
   {
     id: 1,
@@ -11,9 +13,12 @@ const initialProducts = [
     quantity: 60,
     category: "Vegetables",
     farmer: "Ahmed",
+    farmerId: 2,
+    region: "Fes",
+    unit: "kg",
     description: "Fresh and organic tomatoes.",
-    image:
-      "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=600",
+    image: "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=600",
+    createdAt: "2026-01-01",
   },
   {
     id: 2,
@@ -22,9 +27,12 @@ const initialProducts = [
     quantity: 100,
     category: "Vegetables",
     farmer: "Youssef",
+    farmerId: 3,
+    region: "Meknes",
+    unit: "kg",
     description: "Fresh potatoes from local farms.",
-    image:
-      "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600",
+    image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600",
+    createdAt: "2026-01-02",
   },
   {
     id: 3,
@@ -33,9 +41,12 @@ const initialProducts = [
     quantity: 120,
     category: "Grains",
     farmer: "Mohamed",
+    farmerId: 4,
+    region: "Sefrou",
+    unit: "kg",
     description: "High quality local wheat.",
-    image:
-      "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600",
+    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600",
+    createdAt: "2026-01-03",
   },
   {
     id: 4,
@@ -44,9 +55,12 @@ const initialProducts = [
     quantity: 80,
     category: "Vegetables",
     farmer: "Ahmed",
+    farmerId: 2,
+    region: "Fes",
+    unit: "kg",
     description: "Fresh and healthy carrots.",
-    image:
-      "https://images.unsplash.com/photo-1445282768818-728615cc910a?w=600",
+    image: "https://images.unsplash.com/photo-1445282768818-728615cc910a?w=600",
+    createdAt: "2026-01-04",
   },
   {
     id: 5,
@@ -55,9 +69,12 @@ const initialProducts = [
     quantity: 40,
     category: "Fruits",
     farmer: "Youssef",
+    farmerId: 3,
+    region: "Meknes",
+    unit: "kg",
     description: "Sweet and fresh strawberries.",
-    image:
-      "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=600",
+    image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=600",
+    createdAt: "2026-01-05",
   },
   {
     id: 6,
@@ -66,341 +83,349 @@ const initialProducts = [
     quantity: 70,
     category: "Vegetables",
     farmer: "Mohamed",
+    farmerId: 4,
+    region: "Sefrou",
+    unit: "kg",
     description: "Fresh green lettuce.",
-    image:
-      "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=600",
+    image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=600",
+    createdAt: "2026-01-06",
   },
 ];
 
 // Read data from localStorage safely
-const getSavedData = (key, fallback) => {
+const read = (key, fallback) => {
   try {
-    const savedData = localStorage.getItem(key);
-    return savedData ? JSON.parse(savedData) : fallback;
-  } catch (error) {
-    console.error(`Error reading ${key} from localStorage:`, error);
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
     return fallback;
   }
 };
 
+// Remove password from user data
+const safeUser = ({ password, ...user }) => user;
+
+// Main provider
 export function MyProvider({ children }) {
   // Products
   const [products, setProducts] = useState(() =>
-    getSavedData("products", initialProducts)
+    read("products", initialProducts)
   );
 
   // Shopping cart
-  const [cart, setCart] = useState(() =>
-    getSavedData("cart", [])
-  );
+  const [cart, setCart] = useState(() => read("cart", []));
 
-  // Favorites
+  // Favorite products
   const [favorites, setFavorites] = useState(() =>
-    getSavedData("favorites", [])
+    read("favorites", [])
   );
 
   // Orders
-  const [orders, setOrders] = useState(() =>
-    getSavedData("orders", [])
-  );
+  const [orders, setOrders] = useState(() => read("orders", []));
 
   // Categories
   const [categories, setCategories] = useState(() =>
-    getSavedData("categories", [
-      "Vegetables",
-      "Fruits",
-      "Grains",
+    read("categories", ["Vegetables", "Fruits", "Grains"])
+  );
+
+  // Users
+  const [users, setUsers] = useState(() =>
+    read("users", [
+      {
+        id: 1,
+        fullName: "Administrator",
+        email: "admin@agritech.com",
+        password: "Admin123!",
+        role: "Admin",
+        city: "Fes",
+      },
+      {
+        id: 2,
+        fullName: "Ahmed",
+        email: "ahmed@agritech.com",
+        password: "Farmer123!",
+        role: "Farmer",
+        city: "Fes",
+      },
+      {
+        id: 3,
+        fullName: "Youssef",
+        email: "youssef@agritech.com",
+        password: "Farmer123!",
+        role: "Farmer",
+        city: "Meknes",
+      },
+      {
+        id: 4,
+        fullName: "Mohamed",
+        email: "mohamed@agritech.com",
+        password: "Farmer123!",
+        role: "Farmer",
+        city: "Sefrou",
+      },
     ])
+  );
+
+  // Current user
+  const [currentUser, setCurrentUser] = useState(() =>
+    read("currentUser", null)
   );
 
   // Save data whenever it changes
   useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
-  }, [products]);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
-
-  useEffect(() => {
-    localStorage.setItem("orders", JSON.stringify(orders));
-  }, [orders]);
-
-  useEffect(() => {
-    localStorage.setItem("categories", JSON.stringify(categories));
-  }, [categories]);
+    [
+      ["products", products],
+      ["cart", cart],
+      ["favorites", favorites],
+      ["orders", orders],
+      ["categories", categories],
+      ["users", users],
+      ["currentUser", currentUser],
+    ].forEach(([k, v]) =>
+      localStorage.setItem(k, JSON.stringify(v))
+    );
+  }, [products, cart, favorites, orders, categories, users, currentUser]);
 
   // Calculate cart total
-  const cartTotal = cart.reduce((total, item) => {
-    return total + Number(item.price) * Number(item.cartQuantity);
-  }, 0);
+  const cartTotal = useMemo(
+    () =>
+      cart.reduce(
+        (s, i) => s + Number(i.price) * Number(i.cartQuantity),
+        0
+      ),
+    [cart]
+  );
+
+  // Register a new user
+  const register = ({ fullName, email, password, role, city }) => {
+    if (
+      users.some(
+        (u) => u.email.toLowerCase() === email.trim().toLowerCase()
+      )
+    ) {
+      return { error: "This email is already registered." };
+    }
+
+    if (!["Buyer", "Farmer"].includes(role)) {
+      return { error: "Choose Buyer or Farmer." };
+    }
+
+    const user = {
+      id: Date.now(),
+      fullName: fullName.trim(),
+      email: email.trim().toLowerCase(),
+      password,
+      role,
+      city: city || "Fes",
+    };
+
+    setUsers((p) => [...p, user]);
+    setCurrentUser(safeUser(user));
+
+    return { user: safeUser(user) };
+  };
+
+  // Login user
+  const login = ({ email, password }) => {
+    const user = users.find(
+      (u) =>
+        u.email.toLowerCase() === email.trim().toLowerCase() &&
+        u.password === password
+    );
+
+    if (!user) {
+      return { error: "Incorrect email or password." };
+    }
+
+    const clean = safeUser(user);
+    setCurrentUser(clean);
+
+    return { user: clean };
+  };
+
+  // Logout user
+  const logout = () => setCurrentUser(null);
 
   // Add product to cart
   const addToCart = (product, amount = 1) => {
-    const currentProduct = products.find(
-      (item) => item.id === product.id
-    );
+    const p = products.find((x) => x.id === product.id);
 
-    if (!currentProduct || currentProduct.quantity <= 0) {
-      alert("This product is out of stock.");
-      return;
+    if (!p || p.quantity <= 0) {
+      return alert("This product is out of stock.");
     }
 
-    const existingItem = cart.find(
-      (item) => item.id === product.id
-    );
+    setCart((prev) => {
+      const old = prev.find((x) => x.id === p.id);
+      const next = (old?.cartQuantity || 0) + Number(amount);
 
-    const currentQuantity = existingItem
-      ? Number(existingItem.cartQuantity)
-      : 0;
-
-    if (currentQuantity + amount > currentProduct.quantity) {
-      alert("You cannot add more than the available stock.");
-      return;
-    }
-
-    setCart((previousCart) => {
-      const itemExists = previousCart.some(
-        (item) => item.id === product.id
-      );
-
-      if (itemExists) {
-        return previousCart.map((item) =>
-          item.id === product.id
-            ? {
-                ...item,
-                cartQuantity: item.cartQuantity + amount,
-              }
-            : item
-        );
+      if (next > p.quantity) {
+        alert("You cannot add more than the available stock.");
+        return prev;
       }
 
-      return [
-        ...previousCart,
-        {
-          ...currentProduct,
-          cartQuantity: amount,
-        },
-      ];
+      return old
+        ? prev.map((x) =>
+            x.id === p.id ? { ...p, cartQuantity: next } : x
+          )
+        : [...prev, { ...p, cartQuantity: Number(amount) }];
     });
   };
 
   // Remove product from cart
-  const removeFromCart = (productId) => {
-    setCart((previousCart) =>
-      previousCart.filter((item) => item.id !== productId)
-    );
-  };
+  const removeFromCart = (id) =>
+    setCart((p) => p.filter((x) => x.id !== id));
 
   // Change cart quantity
-  const changeQuantity = (productId, amount) => {
-    setCart((previousCart) =>
-      previousCart
+  const changeQuantity = (id, amount) =>
+    setCart((prev) =>
+      prev
         .map((item) => {
-          if (item.id !== productId) return item;
+          if (item.id !== id) return item;
 
-          const currentProduct = products.find(
-            (product) => product.id === productId
-          );
-
-          if (!currentProduct) return null;
-
-          const newQuantity = Math.max(
-            1,
-            Math.min(
-              item.cartQuantity + amount,
-              currentProduct.quantity
-            )
-          );
+          const p = products.find((x) => x.id === id);
+          if (!p) return null;
 
           return {
-            ...item,
-            quantity: currentProduct.quantity,
-            cartQuantity: newQuantity,
+            ...p,
+            cartQuantity: Math.max(
+              1,
+              Math.min(p.quantity, item.cartQuantity + amount)
+            ),
           };
         })
         .filter(Boolean)
     );
-  };
 
   // Clear shopping cart
-  const clearCart = () => {
-    setCart([]);
-  };
+  const clearCart = () => setCart([]);
 
-  // Add product to favorites or remove it
+  // Toggle favorite product
   const toggleFavorite = (product) => {
-    setFavorites((previousFavorites) => {
-      const alreadyFavorite = previousFavorites.some(
-        (item) => item.id === product.id
-      );
-
-      if (alreadyFavorite) {
-        return previousFavorites.filter(
-          (item) => item.id !== product.id
-        );
-      }
-
-      return [...previousFavorites, product];
-    });
+    setFavorites((p) =>
+      p.some((x) => x.id === product.id)
+        ? p.filter((x) => x.id !== product.id)
+        : [...p, product]
+    );
   };
 
   // Add a new product
-  const addProduct = (newProduct) => {
-    const product = {
-      ...newProduct,
+  const addProduct = (data) => {
+    const item = {
+      ...data,
       id: Date.now(),
-      price: Number(newProduct.price),
-      quantity: Number(newProduct.quantity),
+      price: Number(data.price),
+      quantity: Number(data.quantity),
+      farmerId: currentUser?.id,
+      farmer: currentUser?.fullName,
+      createdAt: new Date().toISOString(),
     };
 
-    setProducts((previousProducts) => [
-      ...previousProducts,
-      product,
-    ]);
+    setProducts((p) => [...p, item]);
 
-    return product;
+    return item;
   };
 
   // Update an existing product
-  const updateProduct = (productId, updatedData) => {
-    setProducts((previousProducts) =>
-      previousProducts.map((product) =>
-        product.id === productId
-          ? {
-              ...product,
-              ...updatedData,
-              price:
-                updatedData.price !== undefined
-                  ? Number(updatedData.price)
-                  : product.price,
-              quantity:
-                updatedData.quantity !== undefined
-                  ? Number(updatedData.quantity)
-                  : product.quantity,
-            }
-          : product
+  const updateProduct = (id, data) => {
+    const normalized = {
+      ...data,
+      ...(data.price !== undefined
+        ? { price: Number(data.price) }
+        : {}),
+      ...(data.quantity !== undefined
+        ? { quantity: Number(data.quantity) }
+        : {}),
+    };
+
+    setProducts((p) =>
+      p.map((x) =>
+        x.id === id ? { ...x, ...normalized } : x
       )
     );
 
-    // Keep cart and favorites synchronized
-    setCart((previousCart) =>
-      previousCart.map((item) =>
-        item.id === productId
-          ? {
-              ...item,
-              ...updatedData,
-              price:
-                updatedData.price !== undefined
-                  ? Number(updatedData.price)
-                  : item.price,
-              quantity:
-                updatedData.quantity !== undefined
-                  ? Number(updatedData.quantity)
-                  : item.quantity,
-              cartQuantity: Math.min(
-                item.cartQuantity,
-                updatedData.quantity !== undefined
-                  ? Number(updatedData.quantity)
-                  : item.quantity
-              ),
-            }
-          : item
-      ).filter((item) => item.quantity > 0)
+    setCart((p) =>
+      p
+        .map((x) =>
+          x.id === id
+            ? {
+                ...x,
+                ...normalized,
+                cartQuantity: Math.min(
+                  x.cartQuantity,
+                  normalized.quantity ?? x.quantity
+                ),
+              }
+            : x
+        )
+        .filter((x) => x.quantity > 0)
     );
 
-    setFavorites((previousFavorites) =>
-      previousFavorites.map((item) =>
-        item.id === productId
-          ? { ...item, ...updatedData }
-          : item
+    setFavorites((p) =>
+      p.map((x) =>
+        x.id === id ? { ...x, ...normalized } : x
       )
     );
   };
 
   // Delete a product
-  const deleteProduct = (productId) => {
-    setProducts((previousProducts) =>
-      previousProducts.filter((item) => item.id !== productId)
-    );
-
-    setCart((previousCart) =>
-      previousCart.filter((item) => item.id !== productId)
-    );
-
-    setFavorites((previousFavorites) =>
-      previousFavorites.filter((item) => item.id !== productId)
-    );
+  const deleteProduct = (id) => {
+    setProducts((p) => p.filter((x) => x.id !== id));
+    setCart((p) => p.filter((x) => x.id !== id));
+    setFavorites((p) => p.filter((x) => x.id !== id));
   };
 
-  // Add a category
-  const addCategory = (categoryName) => {
-    const name = categoryName.trim();
+  // Add a new category
+  const addCategory = (name) => {
+    const n = name.trim();
 
-    if (!name) return;
-
-    setCategories((previousCategories) => {
-      const exists = previousCategories.some(
-        (category) =>
-          category.toLowerCase() === name.toLowerCase()
-      );
-
-      if (exists) return previousCategories;
-
-      return [...previousCategories, name];
-    });
+    if (
+      n &&
+      !categories.some((x) => x.toLowerCase() === n.toLowerCase())
+    ) {
+      setCategories((p) => [...p, n]);
+    }
   };
 
-  // Update a category name
+  // Update a category
   const updateCategory = (oldName, newName) => {
-    const name = newName.trim();
+    const n = newName.trim();
 
-    if (!name) return;
+    if (!n) return;
 
-    setCategories((previousCategories) =>
-      previousCategories.map((category) =>
-        category === oldName ? name : category
-      )
+    setCategories((p) =>
+      p.map((x) => (x === oldName ? n : x))
     );
 
-    setProducts((previousProducts) =>
-      previousProducts.map((product) =>
-        product.category === oldName
-          ? { ...product, category: name }
-          : product
+    setProducts((p) =>
+      p.map((x) =>
+        x.category === oldName ? { ...x, category: n } : x
       )
     );
   };
 
   // Delete a category
-  const deleteCategory = (categoryName) => {
-    setCategories((previousCategories) =>
-      previousCategories.filter(
-        (category) => category !== categoryName
+  const deleteCategory = (name) => {
+    setCategories((p) => {
+      const rest = p.filter((x) => x !== name);
+
+      return rest.includes("Other") ? rest : [...rest, "Other"];
+    });
+
+    setProducts((p) =>
+      p.map((x) =>
+        x.category === name ? { ...x, category: "Other" } : x
       )
     );
   };
 
   // Create an order from checkout
   const placeOrder = ({ customer, paymentMethod }) => {
-    if (cart.length === 0) {
-      return null;
-    }
+    if (!cart.length) return null;
 
-    // Check stock again before placing the order
     for (const item of cart) {
-      const currentProduct = products.find(
-        (product) => product.id === item.id
-      );
+      const p = products.find((x) => x.id === item.id);
 
-      if (
-        !currentProduct ||
-        currentProduct.quantity < item.cartQuantity
-      ) {
+      if (!p || p.quantity < item.cartQuantity) {
         alert(
           `${item.name} is no longer available in the requested quantity.`
         );
@@ -408,114 +433,97 @@ export function MyProvider({ children }) {
       }
     }
 
-    const orderItems = cart.map((item) => {
-      const currentProduct = products.find(
-        (product) => product.id === item.id
-      );
+    const items = cart.map((i) => ({
+      ...products.find((p) => p.id === i.id),
+      cartQuantity: i.cartQuantity,
+    }));
 
-      return {
-        ...currentProduct,
-        cartQuantity: item.cartQuantity,
-      };
-    });
-
-    const total = orderItems.reduce(
-      (sum, item) =>
-        sum + Number(item.price) * Number(item.cartQuantity),
-      0
-    );
-
-    const newOrder = {
+    const order = {
       id: Date.now(),
-      items: orderItems,
+      items,
       customer,
       paymentMethod,
-      total,
+      total: items.reduce(
+        (s, i) => s + i.price * i.cartQuantity,
+        0
+      ),
       status: "Pending",
       createdAt: new Date().toISOString(),
+      buyerId: currentUser?.id,
+      buyerEmail: currentUser?.email,
+      farmerIds: [
+        ...new Set(items.map((i) => i.farmerId).filter(Boolean)),
+      ],
     };
 
-    // Decrease product stock
-    setProducts((previousProducts) =>
-      previousProducts.map((product) => {
-        const orderedItem = orderItems.find(
-          (item) => item.id === product.id
-        );
+    setProducts((p) =>
+      p.map((x) => {
+        const bought = items.find((i) => i.id === x.id);
 
-        if (!orderedItem) return product;
-
-        return {
-          ...product,
-          quantity: Math.max(
-            0,
-            product.quantity - orderedItem.cartQuantity
-          ),
-        };
+        return bought
+          ? {
+              ...x,
+              quantity: Math.max(
+                0,
+                x.quantity - bought.cartQuantity
+              ),
+            }
+          : x;
       })
     );
 
-    // Save the order and empty the cart
-    setOrders((previousOrders) => [
-      newOrder,
-      ...previousOrders,
-    ]);
-
+    setOrders((p) => [order, ...p]);
     setCart([]);
 
-    return newOrder;
+    return order;
   };
 
-  // Update order status (Farmer/Admin)
-  const updateOrderStatus = (orderId, newStatus) => {
-    const allowedStatuses = [
-      "Pending",
-      "Confirmed",
-      "Shipped",
-      "Delivered",
-    ];
+  // Update order status
+  const updateOrderStatus = (id, status) => {
+    const allowed = {
+      Pending: ["Confirmed"],
+      Confirmed: ["Shipped"],
+      Shipped: ["Delivered"],
+      Delivered: [],
+    };
 
-    if (!allowedStatuses.includes(newStatus)) return;
+    setOrders((p) =>
+      p.map((o) => {
+        if (o.id !== id || !allowed[o.status]?.includes(status)) {
+          return o;
+        }
 
-    setOrders((previousOrders) =>
-      previousOrders.map((order) =>
-        order.id === orderId
-          ? { ...order, status: newStatus }
-          : order
-      )
+        return { ...o, status };
+      })
     );
   };
 
+  // Share data and functions
   return (
     <MyContext.Provider
       value={{
-        // Main data
         products,
         cart,
         favorites,
         orders,
         categories,
-
-        // Cart
+        users,
+        currentUser,
         cartTotal,
+        register,
+        login,
+        logout,
         addToCart,
         removeFromCart,
         changeQuantity,
         clearCart,
-
-        // Favorites
         toggleFavorite,
-
-        // Products
         addProduct,
         updateProduct,
         deleteProduct,
-
-        // Categories
         addCategory,
         updateCategory,
         deleteCategory,
-
-        // Orders
         placeOrder,
         updateOrderStatus,
       }}
@@ -524,4 +532,5 @@ export function MyProvider({ children }) {
     </MyContext.Provider>
   );
 }
+
 

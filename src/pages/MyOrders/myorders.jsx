@@ -4,7 +4,8 @@ import { Package, ShoppingBag, ArrowLeft } from "lucide-react";
 import { MyContext } from "../../utils/MyContext";
 
 function MyOrders() {
-  const { orders } = useContext(MyContext);
+  const { orders, currentUser } = useContext(MyContext);
+  const myOrders = orders.filter(order => order.buyerId === currentUser?.id || (!order.buyerId && order.customer?.email === currentUser?.email));
 
   const statuses = [
     "Pending",
@@ -47,7 +48,7 @@ function MyOrders() {
         Track your purchases and delivery status.
       </p>
 
-      {orders.length === 0 ? (
+      {myOrders.length === 0 ? (
         <div className="bg-white p-16 text-center rounded-2xl shadow-sm">
 
           <ShoppingBag
@@ -74,7 +75,7 @@ function MyOrders() {
       ) : (
         <div className="space-y-7">
 
-          {orders.map((order) => {
+          {myOrders.map((order) => {
             const currentStep = statuses.indexOf(order.status);
 
             return (

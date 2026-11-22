@@ -61,7 +61,7 @@ function ProductCard({ product }) {
           </div>
 
           <span className="text-xs text-gray-500">
-            {product.quantity} {product.unit} available
+            {product.quantity === 0 ? "Out of stock" : `${product.quantity} ${product.unit || "units"} available`}
           </span>
 
         </div>

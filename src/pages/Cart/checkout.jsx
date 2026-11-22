@@ -12,13 +12,13 @@ import {
 import { MyContext } from "../../utils/MyContext";
 
 function Checkout() {
-  const { cart, cartTotal, placeOrder } = useContext(MyContext);
+  const { cart, cartTotal, placeOrder, currentUser } = useContext(MyContext);
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    fullName: currentUser?.fullName || "",
     phone: "",
     address: "",
-    city: "",
+    city: currentUser?.city || "",
     notes: ""
   });
 
@@ -44,7 +44,7 @@ function Checkout() {
     }
 
     const order = placeOrder({
-      customer: formData,
+      customer: { ...formData, email: currentUser?.email },
       paymentMethod: "Cash on Delivery"
     });
 
