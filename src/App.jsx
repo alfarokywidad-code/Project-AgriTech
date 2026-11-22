@@ -11,6 +11,8 @@ import ProductDetails from './pages/ProductDetails/productdetails';
 import Checkout from './pages/Cart/checkout';
 import MyOrders from './pages/MyOrders/myorders';
 import About from "./pages/About/About";
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/weather" element={<Weather />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="*" element={<Error />} />
         </Routes>
       </main>

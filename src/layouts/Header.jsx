@@ -6,7 +6,7 @@ import { MyContext } from "../utils/MyContext";
 import Cart from "../pages/Cart/cart";
 
 function Header() {
-  const { cart, favorites } = useContext(MyContext);
+  const { cart, favorites, currentUser, logout } = useContext(MyContext);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const links = [
@@ -81,12 +81,14 @@ function Header() {
             </button>
 
             {/* Login */}
-            <Link
-              to="/login"
-              className="hidden sm:block bg-green-700 text-white px-5 py-2.5 rounded-xl hover:bg-green-800 transition"
-            >
-              Login
-            </Link>
+            {currentUser ? (
+              <div className="hidden sm:flex items-center gap-3 text-sm">
+                {currentUser.role === "Farmer" && <Link className="text-green-700 font-semibold" to="/farmer/dashboard">Dashboard</Link>}
+                {currentUser.role === "Admin" && <Link className="text-green-700 font-semibold" to="/admin/dashboard">Admin</Link>}
+                {currentUser.role === "Buyer" && <Link className="text-green-700 font-semibold" to="/my-orders">My orders</Link>}
+                <button onClick={logout} className="bg-green-700 text-white px-4 py-2.5 rounded-xl hover:bg-green-800">Logout</button>
+              </div>
+            ) : <Link to="/login" className="hidden sm:block bg-green-700 text-white px-5 py-2.5 rounded-xl hover:bg-green-800 transition">Login</Link>}
 
             {/* Mobile Menu */}
             <button
