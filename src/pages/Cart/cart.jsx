@@ -1,11 +1,11 @@
 
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {X, Trash2, ShoppingBag, Plus, Minus,Trash} from "lucide-react";
+import { X, Trash2, ShoppingBag, Plus, Minus, Trash } from "lucide-react";
 import { MyContext } from "../../utils/MyContext";
 
 function Cart({ isOpen, onClose }) {
-  const { cart, removeFromCart, changeQuantity, cartTotal} = useContext(MyContext);
+  const { cart, removeFromCart, changeQuantity, cartTotal } = useContext(MyContext);
 
   const navigate = useNavigate();
 
@@ -224,11 +224,12 @@ function Cart({ isOpen, onClose }) {
                   {/* Checkout */}
                   <button
                     onClick={goToCheckout}
-                    className="w-full bg-green-700 text-white py-3 rounded-xl font-semibold hover:bg-green-800 transition"
+                    disabled={cart.length === 0}
+                    className="w-full bg-green-700 text-white py-3 rounded-xl font-bold hover:bg-green-800 disabled:opacity-50"
                   >
                     Proceed to Checkout
                   </button>
-
+                  
                   {/* Continue Shopping */}
                   <button
                     onClick={onClose}

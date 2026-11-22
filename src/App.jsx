@@ -8,6 +8,9 @@ import Home from "./pages/Home/Home";
 import Favorites from './pages/Favorites/favorites';
 import Weather from './pages/Weather/weather';
 import ProductDetails from './pages/ProductDetails/productdetails';
+import Checkout from './pages/Cart/checkout';
+import MyOrders from './pages/MyOrders/myorders';
+import About from "./pages/About/About";
 
 function App() {
   return (
@@ -17,7 +20,10 @@ function App() {
       <main className="min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/weather" element={<Weather />} />
