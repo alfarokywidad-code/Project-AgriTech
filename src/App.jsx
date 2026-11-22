@@ -13,7 +13,7 @@ import MyOrders from './pages/MyOrders/myorders';
 import About from "./pages/About/About";
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
-
+import FarmerDashboard from './pages/Farmer/Dashboard';
 function App() {
   return (
     <>
@@ -31,6 +31,7 @@ function App() {
           <Route path="/weather" element={<Weather />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
           <Route path="*" element={<Error />} />
         </Routes>
       </main>

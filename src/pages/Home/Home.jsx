@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Leaf, Users, TrendingUp, Sprout } from "lucide-react";
-
-
+import { useContext } from "react";
+import { MyContext } from "../../utils/MyContext";
+import ProductCard from "../Marketplace/components/productCard";
 
 function Home() {
 
-
+  const { products } = useContext(MyContext);
 
   return (
     <div>
@@ -97,7 +98,41 @@ function Home() {
 
       </section>
 
-      
+      {/* Featured Products */}
+      <section className="max-w-7xl mx-auto px-6 py-20">
+
+        <div className="flex justify-between items-end mb-10">
+
+          <div>
+            <p className="text-green-700 font-semibold">
+              Discover Our Products
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold mt-2">
+              Featured Products
+            </h2>
+            <p className="text-gray-500 mt-3">
+              Fresh products selected from our farmers.
+            </p>
+          </div>
+
+          <Link
+            to="/marketplace"
+            className="hidden sm:flex items-center gap-2 text-green-700 font-semibold"
+          >
+            View All <ArrowRight size={18} />
+          </Link>
+
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+
+          {products.slice(0, 3).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+
+        </div>
+
+      </section>
 
       {/* Why AgriTech */}
       <section className="bg-[#F0F7F0] py-20">
