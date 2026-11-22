@@ -14,6 +14,7 @@ import About from "./pages/About/About";
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import FarmerDashboard from './pages/Farmer/Dashboard';
+import ProtectedRoute from './routes/ProtectedRoute';
 function App() {
   return (
     <>
@@ -24,14 +25,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/checkout" element={<ProtectedRoute roles={["Buyer"]}><Checkout /></ProtectedRoute>} />
+          <Route path="/my-orders" element={<ProtectedRoute roles={["Buyer"]}><MyOrders /></ProtectedRoute>} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/weather" element={<Weather />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+          <Route path="/farmer/dashboard" element={<ProtectedRoute roles={["Farmer"]}><FarmerDashboard /></ProtectedRoute>} />
           <Route path="*" element={<Error />} />
         </Routes>
       </main>
