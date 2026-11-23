@@ -5,8 +5,8 @@ import { MyContext } from "../../utils/MyContext";
 import ProductCard from "../Marketplace/components/productCard";
 
 function Home() {
-
-  const { products } = useContext(MyContext);
+  const { products, users, orders } = useContext(MyContext);
+  const farmerCount = users.filter(user => user.role === "Farmer").length;
 
   return (
     <div>
@@ -57,20 +57,20 @@ function Home() {
 
               <div>
                 <Leaf className="text-green-700 mb-2" />
-                <h3 className="font-extrabold text-2xl">500+</h3>
+                <h3 className="font-extrabold text-2xl">{products.length}</h3>
                 <p className="text-gray-500 text-sm">Products</p>
               </div>
 
               <div>
                 <Users className="text-green-700 mb-2" />
-                <h3 className="font-extrabold text-2xl">200+</h3>
+                <h3 className="font-extrabold text-2xl">{farmerCount}</h3>
                 <p className="text-gray-500 text-sm">Farmers</p>
               </div>
 
               <div>
                 <TrendingUp className="text-green-700 mb-2" />
-                <h3 className="font-extrabold text-2xl">95%</h3>
-                <p className="text-gray-500 text-sm">Satisfaction</p>
+                <h3 className="font-extrabold text-2xl">{orders.length}</h3>
+                <p className="text-gray-500 text-sm">Orders</p>
               </div>
 
             </div>
