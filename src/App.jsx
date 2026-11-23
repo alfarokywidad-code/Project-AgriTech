@@ -15,6 +15,7 @@ import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import FarmerDashboard from './pages/Farmer/Dashboard';
 import ProtectedRoute from './routes/ProtectedRoute';
+import AdminDashboard from './pages/Admin/Dashboard';
 function App() {
   return (
     <>
@@ -33,6 +34,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/farmer/dashboard" element={<ProtectedRoute roles={["Farmer"]}><FarmerDashboard /></ProtectedRoute>} />
+          <Route path="/farmer/dashboard" element={<ProtectedRoute roles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<Error />} />
         </Routes>
       </main>

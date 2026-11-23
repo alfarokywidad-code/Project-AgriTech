@@ -149,14 +149,6 @@ export function MyProvider({ children }) {
       },
       {
         id: 3,
-        fullName: "Youssef",
-        email: "youssef@agritech.com",
-        password: "Farmer123!",
-        role: "Farmer",
-        city: "Meknes",
-      },
-      {
-        id: 4,
         fullName: "Mohamed",
         email: "mohamed@agritech.com",
         password: "Farmer123!",
