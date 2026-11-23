@@ -34,7 +34,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/farmer/dashboard" element={<ProtectedRoute roles={["Farmer"]}><FarmerDashboard /></ProtectedRoute>} />
-          <Route path="/farmer/dashboard" element={<ProtectedRoute roles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute roles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<Error />} />
         </Routes>
       </main>
